@@ -42,7 +42,7 @@ THIRD_PARTY_APPS = [
 
 # Add IN House Project Apps here
 PROJECT_APPS = [
-
+    'accounts',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
@@ -138,6 +138,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = f'/{project_name}/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+AUTH_USER_MODEL = 'accounts.User'
 
 # REST FRAMEWORK Config Starts
 REST_FRAMEWORK = {
