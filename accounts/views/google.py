@@ -9,10 +9,18 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from accounts.models import User
 from applibs.logger import get_logger
 from services.google_oauth import GoogleOAuth
+from applibs.response import format_success_response
+from applibs.status import (
+    GOOGLE_LOGIN_SUCCESS,
+    GOOGLE_LOGIN_FAILED,
+    INVALID_STATE_OR_CODE,
+    GOOGLE_TOKEN_FETCH_FAILED,
+    GOOGLE_USER_INFO_FETCH_FAILED
+)
 
 logger = get_logger(__name__)
 
-class GoogleLoginRedirectAPIView(APIView):
+class GoogleLoginAPIView(APIView):
     authentication_classes = []
     permission_classes = []
 
@@ -38,20 +46,26 @@ class GoogleCallBackAPIView(APIView):
         request_data = request.GET
         code = request_data.get('code')
         state = request_data.get('state')
-        saved_state = request.session.get('google_oauth_state')
+        # saved_state = request.session.get('google_oauth_state')
+        saved_state = 'zybu5V0FpnMQwjOXxuGtIA'
 
         if not code or not state or state != saved_state:
-            return Response(
-                {"error": "Invalid state or code"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            logger.error({"Error": "Invalid state or code",})
+            return Response(INVALID_STATE_OR_CODE, status=status.HTTP_400_BAD_REQUEST)
 
         token_response = self.oauth.exchange_code_for_token(code)
-        user_info = self.oauth.get_user_info(token_response['access_token'])
+        if not token_response:
+            return Response(GOOGLE_TOKEN_FETCH_FAILED, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-        email = user_info.get('email')
+        token_type = token_response.get('token_type')
+        access_token = token_response.get('access_token')
+
+        user_info = self.oauth.get_user_info(token_type, access_token)
+        if not user_info:
+            return Response(GOOGLE_USER_INFO_FETCH_FAILED, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
         user, created = User.objects.get_or_create(
-            email=email,
+            email = user_info.get('email'),
             defaults={
                 'username': user_info.get('name'),
                 'first_name': user_info.get('given_name', ''),
@@ -61,14 +75,12 @@ class GoogleCallBackAPIView(APIView):
 
         if user:
             refresh = RefreshToken.for_user(user)
-            response_dict = {
-                "message": f"Google Login Successful for user {user.username}",
+            response_data = {
                 "access_token": str(refresh.access_token),
                 "refresh_token": str(refresh)
             }
-            return Response(data=response_dict, status=status.HTTP_200_OK)
+            return Response(
+                format_success_response(GOOGLE_LOGIN_SUCCESS, response_data), status=status.HTTP_200_OK
+            )
 
-        return Response(
-            {"error": "Google Login Failed"},
-            status=status.HTTP_422_UNPROCESSABLE_ENTITY
-        )
+        return Response(GOOGLE_LOGIN_FAILED, status=status.HTTP_422_UNPROCESSABLE_ENTITY)

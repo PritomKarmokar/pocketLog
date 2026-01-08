@@ -1,15 +1,15 @@
 from django.urls import path
 
 from .views import (
+    GoogleLoginAPIView,
     GoogleCallBackAPIView,
-    GoogleLoginRedirectAPIView
 )
 
 urlpatterns = [
     path(
-        "google/redirect/",
-        GoogleLoginRedirectAPIView.as_view(),
-        name="google_login_redirect"
+        "google/login/",
+        GoogleLoginAPIView.as_view(),
+        name="google_login"
     ),
     path(
         "google/callback/",

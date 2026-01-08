@@ -1,6 +1,9 @@
 import secrets
 import requests
 
+from typing import Any, Optional
+from rest_framework import status
+
 from django.conf import settings
 from urllib.parse import urlencode
 
@@ -21,9 +24,12 @@ class GoogleOAuth:
         return secrets.token_urlsafe(16)
 
     @staticmethod
-    def get_headers(token: str) -> dict:
+    def get_headers(
+        token: str,
+        token_type: str = "Bearer",
+    ) -> dict:
         headers = {
-            "Authorization": f"Bearer {token}"
+            "Authorization": f"{token_type} {token}"
         }
         return headers
 
@@ -47,33 +53,52 @@ class GoogleOAuth:
     def exchange_code_for_token(
         self,
         code: str
-    ) -> dict:
-        data = {
+    ) -> Optional[dict[str, Any]]:
+        payload = {
             "code": code,
             "client_id": settings.GOOGLE_CLIENT_ID,
             "client_secret": settings.GOOGLE_CLIENT_SECRET,
             "redirect_uri": settings.GOOGLE_REDIRECT_URI,
             "grant_type": "authorization_code",
         }
+        response = requests.post(self.token_url, data=payload, timeout=self.timeout)
 
-        response = requests.post(self.token_url, data=data, timeout=self.timeout)
+        response_data = response.json()
+        response_code = response.status_code
 
-        logger.info({
-            "Google Token Response": response.json(),
-            "status_code": response.status_code,
-        })
-
-        return response.json()
+        if status.is_success(response_code):
+            logger.info({
+                "Google Token Response Status Code": response_code,
+                "Response": response_data,
+            })
+            return response_data
+        else:
+            logger.error({
+                "Error": "Google Token Exchange Failed",
+                "Response": response_data or {},
+            })
+            return None
 
     def get_user_info(
         self,
+        token_type: str,
         access_token: str
-    ) -> dict:
-        headers = self.get_headers(access_token)
+    ) -> Optional[dict[str, Any]]:
+
+        headers = self.get_headers(access_token, token_type)
         response = requests.get(self.user_info_url, headers=headers, timeout=self.timeout)
 
-        logger.info({
-            "Google User Info Response": response.json(),
-            "status_code": response.status_code,
-        })
-        return response.json()
+        response_data = response.json()
+        response_code = response.status_code
+        if status.is_success(response_code):
+            logger.info({
+                "Google User Info Response Status Code": response_code,
+                "Response": response_data,
+            })
+            return response_data
+        else:
+            logger.error({
+                "Error": "Google User Info Fetch Failed",
+                "Response": response_data or {},
+            })
+            return None
