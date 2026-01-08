@@ -252,3 +252,13 @@ SIMPLE_JWT = {
     "JTI_CLAIM": "jti",
 }
 # Simple JWT settings end
+
+# GOOGLE OAuth Config
+GOOGLE_CLIENT_ID = env.str('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = env.str('GOOGLE_CLIENT_SECRET')
+GOOGLE_AUTH_URL = env.str('GOOGLE_AUTH_URL')
+GOOGLE_TOKEN_URL = env.str('GOOGLE_TOKEN_URL')
+GOOGLE_USER_INFO_URL = env.str('GOOGLE_USER_INFO_URL')
+# note: need to configure it based on the projects base url
+GOOGLE_REDIRECT_URI = env.str('GOOGLE_REDIRECT_URI')
+# GOOGLE OAuth Config End

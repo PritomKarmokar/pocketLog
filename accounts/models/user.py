@@ -7,6 +7,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 
 from applibs.logger import get_logger
+from applibs.choice import AuthProvider
 
 logger = get_logger(__name__)
 
@@ -47,6 +48,11 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=55)
     date_joined = models.DateTimeField(default=timezone.now)
+    auth_provider = models.CharField(
+        max_length=10,
+        choices=AuthProvider.choices,
+        default=AuthProvider.Local
+    )
 
     objects = UserManager()
 
