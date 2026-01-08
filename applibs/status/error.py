@@ -21,3 +21,25 @@ GOOGLE_USER_INFO_FETCH_FAILED = {
     "lang": "en",
     "message": "Google User Info Fetch Failed",
 }
+
+VALID_DATA_NOT_FOUND = {
+    "code": "VDNF400",
+    "lang": "en",
+    "message": "Valid data not found",
+}
+
+USER_ALREADY_EXISTS = {
+    "code": "UAE400",
+    "lang": "en",
+    "message": "An User with this email address already exists.",
+}
+
+USER_CREATION_FAILED = {
+    "code": "UCF400",
+    "lang": "en",
+    "message": "User creation failed.",
+}
+
+VALIDATION_ERROR_DICT = {
+    "UAE400": USER_ALREADY_EXISTS,
+}

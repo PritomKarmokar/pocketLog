@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from accounts.models import User
 from applibs.logger import get_logger
 from services.google_oauth import GoogleOAuth
-from applibs.response import format_success_response
+from applibs.response import format_output_success
 from applibs.status import (
     GOOGLE_LOGIN_SUCCESS,
     GOOGLE_LOGIN_FAILED,
@@ -80,7 +80,7 @@ class GoogleCallBackAPIView(APIView):
                 "refresh_token": str(refresh)
             }
             return Response(
-                format_success_response(GOOGLE_LOGIN_SUCCESS, response_data), status=status.HTTP_200_OK
+                format_output_success(GOOGLE_LOGIN_SUCCESS, response_data), status=status.HTTP_200_OK
             )
 
         return Response(GOOGLE_LOGIN_FAILED, status=status.HTTP_422_UNPROCESSABLE_ENTITY)

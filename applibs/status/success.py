@@ -9,3 +9,9 @@ GOOGLE_LOGIN_SUCCESS = {
     "lang": "en",
     "message": "Google Login Success",
 }
+
+USER_SIGNUP_SUCCESS = {
+    "code": "US200",
+    "lang": "en",
+    "message": "User Signup Success",
+}

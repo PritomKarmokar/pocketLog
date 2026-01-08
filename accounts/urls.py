@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (
     GoogleLoginAPIView,
     GoogleCallBackAPIView,
+    SignUpAPIView
 )
 
 urlpatterns = [
@@ -16,4 +17,9 @@ urlpatterns = [
         GoogleCallBackAPIView.as_view(),
         name="google_callback"
     ),
+    path(
+        "signup/",
+        SignUpAPIView.as_view(),
+        name="signup"
+    )
 ]

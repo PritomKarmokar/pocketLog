@@ -70,3 +70,10 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'User'
         db_table = 'users'
+
+    @property
+    def profile_response_data(self) -> dict:
+        return {
+            "username": self.username,
+            "joining_date": self.date_joined.strftime("%d-%m-%Y %H:%M:%S")
+        }
