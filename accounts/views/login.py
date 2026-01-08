@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.conf import settings
-from django.contrib.auth import authenticate
 
 from accounts.models import User
 from applibs.logger import get_logger
