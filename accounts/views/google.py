@@ -46,8 +46,7 @@ class GoogleCallBackAPIView(APIView):
         request_data = request.GET
         code = request_data.get('code')
         state = request_data.get('state')
-        # saved_state = request.session.get('google_oauth_state')
-        saved_state = 'zybu5V0FpnMQwjOXxuGtIA'
+        saved_state = request.session.get('google_oauth_state')
 
         if not code or not state or state != saved_state:
             logger.error({"Error": "Invalid state or code",})
@@ -64,14 +63,15 @@ class GoogleCallBackAPIView(APIView):
         if not user_info:
             return Response(GOOGLE_USER_INFO_FETCH_FAILED, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-        user, created = User.objects.get_or_create(
-            email = user_info.get('email'),
-            defaults={
-                'username': user_info.get('name'),
-                'first_name': user_info.get('given_name', ''),
-                'last_name': user_info.get('family_name', '')
-            }
-        )
+        email = user_info.get('email')
+        user = User.objects.fetch_user_with_email(email)
+        if not user:
+            user = User.objects.create_user(
+                email = email,
+                username = user_info.get('name'),
+                first_name = user_info.get('given_name', ''),
+                last_name = user_info.get('family_name', ''),
+            )
 
         if user:
             refresh = RefreshToken.for_user(user)

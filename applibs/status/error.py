@@ -40,6 +40,18 @@ USER_CREATION_FAILED = {
     "message": "User creation failed.",
 }
 
+INVALID_CREDENTIALS = {
+    "code": "INVC400",
+    "lang": "en",
+    "message": "Invalid Login Credentials.",
+}
+
+INVALID_LOGIN_OPTIONS = {
+    "code": "INLO400",
+    "lang": "en",
+    "message": "Invalid Login Options. You can either login using Google or add password for this login option.",
+}
+
 VALIDATION_ERROR_DICT = {
     "UAE400": USER_ALREADY_EXISTS,
 }

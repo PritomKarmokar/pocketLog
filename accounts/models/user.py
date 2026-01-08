@@ -1,5 +1,5 @@
 import ulid
-from typing import Any
+from typing import Any, Optional
 
 from django.db import models
 from django.utils import timezone
@@ -22,7 +22,8 @@ class UserManager(BaseUserManager):
         user = self.model(email=email, **extra_fields)
         if password:
             user.set_password(password)
-
+        else:
+            user.set_unusable_password()
         user.save(using=self._db)
         return user
 
@@ -42,6 +43,14 @@ class UserManager(BaseUserManager):
             raise ValueError("Superuser must have is_superuser=True")
 
         return self.create_user(email=email, password=password, **extra_fields)
+
+    def fetch_user_with_email(self, email: str) -> Optional[AbstractUser]:
+        try:
+            user = self.get(email=email)
+            return user
+        except self.model.DoesNotExist:
+            return None
+
 
 class User(AbstractUser):
     id = models.CharField(max_length=26, primary_key=True, editable=False)
