@@ -6,3 +6,8 @@ urlpatterns = [
     path(f'{service_name}/admin/', admin.site.urls),
     # path('admin/', admin.site.urls),
 ]
+
+# Admin
+admin.site.site_header = "Pocket Log"
+admin.site.index_title = "Pocket Log"
+admin.site.site_title = "Pocket Log"
