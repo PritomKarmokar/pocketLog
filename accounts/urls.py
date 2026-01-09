@@ -5,6 +5,7 @@ from .views import (
     GoogleCallBackAPIView,
     SignUpAPIView,
     LoginAPIView,
+    LogOutAPIView,
 )
 
 urlpatterns = [
@@ -28,4 +29,9 @@ urlpatterns = [
         LoginAPIView.as_view(),
         name="login"
     ),
+    path(
+        "logout/",
+        LogOutAPIView.as_view(),
+        name="logout"
+    )
 ]

@@ -38,6 +38,8 @@ THIRD_PARTY_APPS = [
     'cid.apps.CidAppConfig',
     'corsheaders',
     'django_extensions',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 # Add IN House Project Apps here

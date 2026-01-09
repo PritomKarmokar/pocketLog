@@ -52,6 +52,12 @@ INVALID_LOGIN_OPTIONS = {
     "message": "Invalid Login Options. You can either login using Google or add password for this login option.",
 }
 
+INVALID_REFRESH_TOKEN = {
+    "code": "INRF400",
+    "message": "Invalid Token Provided.",
+    "lang": "en",
+}
+
 ACCOUNT_DISABLED = {
     "code": "ACD400",
     "lang": "en",

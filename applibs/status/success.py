@@ -21,3 +21,9 @@ USER_LOGIN_SUCCESS = {
     "lang": "en",
     "message": "User Login Success",
 }
+
+LOGOUT_SUCCESSFUL = {
+    "code": "LS_200",
+    "message": "Successfully logged out.",
+    "lang": "en",
+}
