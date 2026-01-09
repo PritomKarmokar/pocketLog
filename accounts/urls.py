@@ -6,6 +6,7 @@ from .views import (
     SignUpAPIView,
     LoginAPIView,
     LogOutAPIView,
+    AddPasswordAPIView,
 )
 
 urlpatterns = [
@@ -33,5 +34,10 @@ urlpatterns = [
         "logout/",
         LogOutAPIView.as_view(),
         name="logout"
+    ),
+    path(
+        "add-password/",
+        AddPasswordAPIView.as_view(),
+        name="add_password",
     )
 ]

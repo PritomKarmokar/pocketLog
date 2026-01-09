@@ -23,7 +23,13 @@ USER_LOGIN_SUCCESS = {
 }
 
 LOGOUT_SUCCESSFUL = {
-    "code": "LS_200",
+    "code": "LS200",
     "message": "Successfully logged out.",
     "lang": "en",
+}
+
+PASSWORD_ASSERT_SUCCESS = {
+    "code": "PAS200",
+    "lang": "en",
+    "message": "Password Added Successful",
 }

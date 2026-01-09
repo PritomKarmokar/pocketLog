@@ -58,6 +58,18 @@ INVALID_REFRESH_TOKEN = {
     "lang": "en",
 }
 
+INVALID_PASSWORD_ASSERT_OPTIONS = {
+    "code": "INPA400",
+    "lang": "en",
+    "message": "Invalid Password Assert Options. You have already Signup using Password. If you've forgotten it check the password reset options.",
+}
+
+PASSWORDS_DOES_NOT_MATCH = {
+    "code": "PDM400",
+    "lang": "en",
+    "message": "Both passwords do not match."
+}
+
 ACCOUNT_DISABLED = {
     "code": "ACD400",
     "lang": "en",
