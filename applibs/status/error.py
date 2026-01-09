@@ -52,6 +52,12 @@ INVALID_LOGIN_OPTIONS = {
     "message": "Invalid Login Options. You can either login using Google or add password for this login option.",
 }
 
+ACCOUNT_DISABLED = {
+    "code": "ACD400",
+    "lang": "en",
+    "message": "Account is disabled. Please contact admin.",
+}
+
 VALIDATION_ERROR_DICT = {
     "UAE400": USER_ALREADY_EXISTS,
 }
