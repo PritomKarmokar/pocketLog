@@ -17,7 +17,7 @@ USER_SIGNUP_SUCCESS = {
 }
 
 USER_LOGIN_SUCCESS = {
-    "code": "UL200",
+    "code": "ULS200",
     "lang": "en",
     "message": "User Login Success",
 }
