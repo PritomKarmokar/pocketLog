@@ -54,11 +54,6 @@ class LoginAPIView(APIView):
             logger.error("Invalid credentials for email: %s", email)
             return Response(INVALID_CREDENTIALS, status=status.HTTP_401_UNAUTHORIZED)
 
-        # note: 'user.is_active' check is default done by authenticate
-        if not user.is_active:
-            logger.error("User with this email %s is inactive", email)
-            return Response(ACCOUNT_DISABLED, status=status.HTTP_403_FORBIDDEN)
-
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
         response_data = {
