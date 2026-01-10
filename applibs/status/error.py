@@ -64,10 +64,10 @@ INVALID_PASSWORD_ASSERT_OPTIONS = {
     "message": "Invalid Password Assert Options. You have already Signup using Password. If you've forgotten it check the password reset options.",
 }
 
-PASSWORDS_DOES_NOT_MATCH = {
+PASSWORD_DOES_NOT_MATCH = {
     "code": "PDM400",
     "lang": "en",
-    "message": "Both passwords do not match."
+    "message": "You've entered wrong password. If you've forgotten it check the password reset options."
 }
 
 ACCOUNT_DISABLED = {

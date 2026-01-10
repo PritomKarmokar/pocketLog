@@ -33,3 +33,9 @@ PASSWORD_ASSERT_SUCCESS = {
     "lang": "en",
     "message": "Password Added Successful",
 }
+
+PASSWORD_RESET_SUCCESS = {
+    "code": "PAS200",
+    "lang": "en",
+    "message": "Password Reset Successful",
+}

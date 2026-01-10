@@ -91,3 +91,8 @@ class User(AbstractUser):
         self.last_login = timezone.now()
         self.save()
         return True
+
+    def add_password(self, password: str) -> bool:
+        self.set_password(password)
+        self.save()
+        return True

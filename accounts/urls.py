@@ -7,6 +7,7 @@ from .views import (
     LoginAPIView,
     LogOutAPIView,
     AddPasswordAPIView,
+    ResetPasswordAPIView,
 )
 
 urlpatterns = [
@@ -39,5 +40,10 @@ urlpatterns = [
         "add-password/",
         AddPasswordAPIView.as_view(),
         name="add_password",
+    ),
+    path(
+        "reset-password/",
+        ResetPasswordAPIView.as_view(),
+        name="reset_password",
     )
 ]
