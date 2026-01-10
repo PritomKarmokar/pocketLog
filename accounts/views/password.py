@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from applibs.logger import get_logger
+from applibs.helper import render_serializer_errors
+from applibs.response import format_output_success, format_output_error
 from accounts.serializers import AddPasswordSerializer
 from applibs.status import (
     VALID_DATA_NOT_FOUND,
@@ -29,15 +31,10 @@ class AddPasswordAPIView(APIView):
         if not serializer.is_valid():
             errors = serializer.errors
             logger.error("Add Password Serializer Errors: %s", errors)
-            return Response(VALID_DATA_NOT_FOUND, status=status.HTTP_400_BAD_REQUEST)
+            return Response(format_output_error(VALID_DATA_NOT_FOUND, error=errors), status=status.HTTP_400_BAD_REQUEST)
 
         validated_data = serializer.validated_data
         password = validated_data.get('password')
-        confirm_password = validated_data.get('confirm_password')
-
-        if password != confirm_password:
-            logger.error("Passwords do not match")
-            return Response(PASSWORDS_DOES_NOT_MATCH, status=status.HTTP_400_BAD_REQUEST)
 
         user.set_password(password)
         user.save()
