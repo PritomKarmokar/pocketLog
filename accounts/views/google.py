@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import redirect
 
 from rest_framework import status
@@ -74,10 +75,15 @@ class GoogleCallBackAPIView(APIView):
             )
 
         if user:
+            _ = user.mark_logged_in()
             refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
             response_data = {
-                "access_token": str(refresh.access_token),
-                "refresh_token": str(refresh)
+                "access_token": str(access_token),
+                "refresh_token": str(refresh),
+                "header_token": settings.SIMPLE_JWT.get("AUTH_HEADER_TYPES"),
+                "expires_in": int(refresh.lifetime.total_seconds()),
+                "token_type": "Bearer"
             }
             return Response(
                 format_output_success(GOOGLE_LOGIN_SUCCESS, response_data), status=status.HTTP_200_OK

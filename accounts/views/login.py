@@ -54,6 +54,7 @@ class LoginAPIView(APIView):
             logger.error("Invalid credentials for email: %s", email)
             return Response(INVALID_CREDENTIALS, status=status.HTTP_401_UNAUTHORIZED)
 
+        _ = user.mark_logged_in()
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
         response_data = {

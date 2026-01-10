@@ -86,3 +86,8 @@ class User(AbstractUser):
             "username": self.username,
             "joining_date": self.date_joined.strftime("%d-%m-%Y %H:%M:%S")
         }
+
+    def mark_logged_in(self) -> bool:
+        self.last_login = timezone.now()
+        self.save()
+        return True
