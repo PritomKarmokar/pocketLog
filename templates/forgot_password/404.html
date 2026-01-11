@@ -1,0 +1,20 @@
+<!-- templates/forgot_password/404.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Link Expired or Invalid</title>
+</head>
+<body>
+    <h2>Oops! Something went wrong.</h2>
+
+    {% if errors %}
+        <ul style="color:red;">
+            {% for error in errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>The password reset link is either invalid or has expired.</p>
+    {% endif %}
+</body>
+</html>

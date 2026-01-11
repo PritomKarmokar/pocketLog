@@ -30,6 +30,26 @@ class PasswordChangeRequestManager(models.Manager):
             logger.error("Error creating new PasswordChangeRequest: %s", str(e))
             return None
 
+
+    def fetch_valid_request(
+        self,
+        hashed_token: str
+    )-> Optional["PasswordChangeRequest"]:
+        try:
+            request_object = self.get(
+                hashed_token=hashed_token,
+                is_used=False,
+            )
+            current_time = timezone.now()
+            if request_object and request_object.valid_till <= current_time:
+                logger.info("Fetched valid PasswordChangeRequest for user_id: %s", request_object.user_id)
+                return request_object
+            
+            return None
+        except Exception as e:
+            logger.error("Error fetching Password Change Request: %s", str(e))
+            return None
+
 class PasswordChangeRequest(models.Model):
     id = models.CharField(max_length=26, primary_key=True, editable=False)
     hashed_token = models.CharField(max_length=255)

@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import TemplateHTMLRenderer
 
 from accounts.models import User, PasswordChangeRequest
 from applibs.logger import get_logger
@@ -113,7 +114,7 @@ class RequestForgotPasswordAPIView(APIView):
         
         base_url = settings.POCKET_LOG_BASE_URL
         reset_link = f"{base_url}/reset-password?token={token}"
-        
+
         # todo: send email to user with this reset_link, and change the response accordingly
         response_data = {
             "reset_link": reset_link
@@ -122,3 +123,64 @@ class RequestForgotPasswordAPIView(APIView):
             format_output_success(PASSWORD_REQUEST_LINK_SENT_SUCCESS, data=response_data),
             status=status.HTTP_200_OK
         )
+    
+
+class ForgotPasswordPageView(APIView):
+    permission_classes = []
+    renderer_classes = [TemplateHTMLRenderer]
+
+    def get(self, request: Request) -> Response:
+        params = request.query_params
+        token = params.get('token', None)
+        if not token:
+            logger.error("No token provided in the forgot password request page")
+            return Response(template_name="forgot_password/404.html", status=status.HTTP_400_BAD_REQUEST)
+        
+        hashed_token = generate_hashed_token(token)
+        password_request_object = PasswordChangeRequest.objects.fetch_valid_request(hashed_token=hashed_token)
+        if not password_request_object:
+            return Response(template_name="password_reset/404.html", status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(template_name="password_reset/password_form.html", status=status.HTTP_200_OK)
+    
+    def post(self, request: Request) -> Response:
+        params = request.query_params
+        request_data = request.POST.dict()
+
+        token = params.get('token', None)
+        if not token:
+            logger.error("No token provided in the forgot password request page")
+            return Response(template_name="forgot_password/404.html", status=status.HTTP_400_BAD_REQUEST)
+        
+        hashed_token = generate_hashed_token(token)
+        password_request_object = PasswordChangeRequest.objects.fetch_valid_request(hashed_token=hashed_token)
+        if not password_request_object:
+            return Response(template_name="password_reset/404.html", status=status.HTTP_400_BAD_REQUEST)
+        
+        new_password = request_data.get('new_password').strip()
+        confirm_new_password = request_data.get('confirm_new_password').strip()
+
+        errors = []
+        if not new_password:
+            errors.append("New password is required.")
+        
+        if not confirm_new_password:
+            errors.append("Confirm new password is required.")
+        
+        if new_password != confirm_new_password:
+            errors.append("New password and confirm new password do not match.")
+        
+        # todo: add password validations based on Django's default password validators
+        if errors:
+            context = {"errors": errors}
+            return Response(context, template_name="password_reset/password_form.html", status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.get(id=password_request_object.user_id)
+        if not user:
+            logger.error("User not found for password reset with user_id: %s", password_request_object.user_id)
+            return Response(template_name="password_reset/404.html", status=status.HTTP_400_BAD_REQUEST)
+
+        _ = user.add_password(new_password)
+        password_request_object.is_used = True
+        password_request_object.save()
+        return Response(template_name="password_reset/success.html", status=status.HTTP_200_OK)

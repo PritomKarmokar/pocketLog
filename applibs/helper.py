@@ -23,3 +23,9 @@ def generate_hashed_token(token: str) -> str:
     encoded_data = token.encode('utf-8') # converting `token` to bytes
     encoded_hash_key = hash_key.encode('utf-8')
     return hmac.new(encoded_hash_key, encoded_data, hashlib.sha256).hexdigest()
+
+def verify_token(raw_code: str, stored_hash: str) -> bool:
+    return hmac.compare_digest(
+        generate_hashed_token(raw_code),
+        stored_hash
+    )
