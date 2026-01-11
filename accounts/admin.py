@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from accounts.models import User, PasswordChangeRequest
 
-
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     model = User
@@ -21,7 +20,9 @@ class CustomUserAdmin(UserAdmin):
             ),
         }),
     )
-
+    fieldsets = UserAdmin.fieldsets + (
+        ("Authentication", {"fields": ("auth_provider",)}),
+    )
     list_display = ("username", "email", "is_staff", "is_active")
     ordering = ("email",)
 

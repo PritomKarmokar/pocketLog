@@ -72,6 +72,7 @@ class GoogleCallBackAPIView(APIView):
                 username = user_info.get('name'),
                 first_name = user_info.get('given_name', ''),
                 last_name = user_info.get('family_name', ''),
+                auth_provider = 'google',
             )
 
         if user:
