@@ -44,7 +44,7 @@ class PasswordChangeRequestManager(models.Manager):
                 is_used=False,
             )
             current_time = timezone.now()
-            if request_object and request_object.valid_till > current_time:
+            if request_object and request_object.valid_till >= current_time:
                 logger.info("Fetched valid PasswordChangeRequest for user_id: %s", request_object.user_id)
                 return request_object
             
@@ -74,3 +74,8 @@ class PasswordChangeRequest(models.Model):
     class Meta:
         db_table = "password_change_requests"
         verbose_name = "Password Change Request"
+
+    def update_model(self) -> bool:
+        self.is_used = True
+        self.save()
+        return True

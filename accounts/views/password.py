@@ -1,6 +1,8 @@
 import secrets
 
 from django.conf import settings
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -129,36 +131,53 @@ class ForgotPasswordPageView(APIView):
     permission_classes = []
     renderer_classes = [TemplateHTMLRenderer]
 
+    @staticmethod
+    def get_valid_password_request(token: str):
+        if not token:
+            logger.error("No token provided in the forgot password request page")
+            return None
+
+        hashed_token = generate_hashed_token(token)
+        password_request_object = PasswordChangeRequest.objects.fetch_valid_request(hashed_token=hashed_token)
+        return password_request_object
+
+    @staticmethod
+    def validate_password_strength(password: str):
+        """
+            Validate password against Django's password validators.
+        """
+        try:
+            validate_password(password)
+            return []
+        except ValidationError as e:
+            return e.messages
+
     def get(self, request: Request) -> Response:
         params = request.query_params
         token = params.get('token', None)
-        if not token:
-            logger.error("No token provided in the forgot password request page")
-            return Response(template_name="forgot_password/404.html", status=status.HTTP_400_BAD_REQUEST)
-        
-        hashed_token = generate_hashed_token(token)
-        password_request_object = PasswordChangeRequest.objects.fetch_valid_request(hashed_token=hashed_token)
+        password_request_object = self.get_valid_password_request(token=token)
         if not password_request_object:
-            return Response(template_name="forgot_password/404.html", status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                template_name="forgot_password/404.html", status=status.HTTP_400_BAD_REQUEST
+            )
         
-        return Response(template_name="forgot_password/password_form.html", status=status.HTTP_200_OK)
+        return Response(
+            template_name="forgot_password/password_form.html", status=status.HTTP_200_OK
+        )
     
     def post(self, request: Request) -> Response:
-        params = request.query_params
         request_data = request.POST.dict()
-
+        params = request.query_params
         token = params.get('token', None)
-        if not token:
-            logger.error("No token provided in the forgot password request page")
-            return Response(template_name="forgot_password/404.html", status=status.HTTP_400_BAD_REQUEST)
-        
-        hashed_token = generate_hashed_token(token)
-        password_request_object = PasswordChangeRequest.objects.fetch_valid_request(hashed_token=hashed_token)
+
+        password_request_object = self.get_valid_password_request(token=token)
         if not password_request_object:
-            return Response(template_name="password_reset/404.html", status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                template_name="forgot_password/404.html", status=status.HTTP_400_BAD_REQUEST
+            )
         
-        new_password = request_data.get('new_password').strip()
-        confirm_password = request_data.get('confirm_password').strip()
+        new_password = request_data.get('new_password', '').strip()
+        confirm_password = request_data.get('confirm_password', '').strip()
 
         errors = []
         if not new_password:
@@ -169,18 +188,22 @@ class ForgotPasswordPageView(APIView):
         
         if new_password != confirm_password:
             errors.append("New password and confirm new password do not match.")
-        
-        # todo: add password validations based on Django's default password validators
+
+        # Validate password strength
+        password_errors = self.validate_password_strength(new_password)
+        errors.extend(password_errors)
+
         if errors:
             context = {"errors": errors}
-            return Response(context, template_name="forgot_password/password_form.html", status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                context, template_name="forgot_password/password_form.html", status=status.HTTP_400_BAD_REQUEST
+            )
 
-        user = User.objects.get(id=password_request_object.user_id)
+        user = User.objects.fetch_user_by_id(user_id=password_request_object.user_id)
         if not user:
             logger.error("User not found for password reset with user_id: %s", password_request_object.user_id)
             return Response(template_name="forgot_password/404.html", status=status.HTTP_400_BAD_REQUEST)
 
         _ = user.add_password(new_password)
-        password_request_object.is_used = True
-        password_request_object.save()
+        password_request_object.update_model()
         return Response(template_name="forgot_password/success.html", status=status.HTTP_200_OK)

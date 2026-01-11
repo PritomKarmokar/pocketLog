@@ -51,6 +51,13 @@ class UserManager(BaseUserManager):
         except self.model.DoesNotExist:
             return None
 
+    def fetch_user_by_id(self, user_id: str) -> Optional[AbstractUser]:
+        try:
+            user = self.get(id=user_id)
+            return user
+        except self.model.DoesNotExist:
+            return None
+
 
 class User(AbstractUser):
     id = models.CharField(max_length=26, primary_key=True, editable=False)
