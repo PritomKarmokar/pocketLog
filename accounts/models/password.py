@@ -1,8 +1,10 @@
 import ulid
 from typing import Optional
-from datetime import timezone, timedelta
+from datetime import timedelta
 
 from django.db import models
+from django.conf import settings
+from django.utils import timezone
 
 from applibs.logger import get_logger
 
@@ -16,7 +18,8 @@ class PasswordChangeRequestManager(models.Manager):
     ) -> Optional["PasswordChangeRequest"]:
         try:
             created_at = timezone.now()
-            valid_till = created_at + timedelta(minutes=30)
+            token_expiry_minutes = settings.PASSWORD_RESET_TOKEN_EXPIRY_MINUTES
+            valid_till = created_at + timedelta(minutes=token_expiry_minutes)
 
             request_object = self.create(
                 hashed_token=hashed_token,
@@ -41,7 +44,7 @@ class PasswordChangeRequestManager(models.Manager):
                 is_used=False,
             )
             current_time = timezone.now()
-            if request_object and request_object.valid_till <= current_time:
+            if request_object and request_object.valid_till > current_time:
                 logger.info("Fetched valid PasswordChangeRequest for user_id: %s", request_object.user_id)
                 return request_object
             

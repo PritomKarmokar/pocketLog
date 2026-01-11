@@ -43,5 +43,5 @@ PASSWORD_RESET_SUCCESS = {
 PASSWORD_REQUEST_LINK_SENT_SUCCESS = {
     "code": "PRLS200",
     "lang": "en",
-    "message": "Password reset link has been sent to your email address if it exists in our system.",
+    "message": "Password reset link sent Successful.",
 }

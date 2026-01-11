@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from accounts.models import User
+from accounts.models import User, PasswordChangeRequest
 
 
 @admin.register(User)
@@ -29,3 +29,13 @@ class CustomUserAdmin(UserAdmin):
         "email",
         "username",
     )
+
+@admin.register(PasswordChangeRequest)
+class PasswordChangeRequestAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "user_id",
+        "valid_till",
+    )
+    ordering = ("-created_at",)
+    search_fields = ("user_id",)

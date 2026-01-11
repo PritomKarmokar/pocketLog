@@ -8,6 +8,8 @@ from .views import (
     LogOutAPIView,
     AddPasswordAPIView,
     ResetPasswordAPIView,
+    ForgotPasswordPageView,
+    RequestForgotPasswordAPIView,
 )
 
 urlpatterns = [
@@ -45,5 +47,16 @@ urlpatterns = [
         "reset-password/",
         ResetPasswordAPIView.as_view(),
         name="reset_password",
+    ),
+    path(
+        "request/forgot-password/",
+        RequestForgotPasswordAPIView.as_view(),
+        name="request_forgot_password",
+    ),
+    path(
+        "forgot-password/",
+        ForgotPasswordPageView.as_view(),
+        name="forgot_password",
     )
+
 ]
