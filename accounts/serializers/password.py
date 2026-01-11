@@ -61,3 +61,7 @@ class ResetPasswordSerializer(serializers.Serializer):
                 "password": "new_password and confirm_new_password does not match."
             })
         return attrs
+    
+
+class RequestForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()

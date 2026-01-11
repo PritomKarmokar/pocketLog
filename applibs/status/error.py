@@ -76,6 +76,12 @@ ACCOUNT_DISABLED = {
     "message": "Account is disabled. Please contact admin.",
 }
 
+PASSWORD_REQUEST_PROCESS_FAILED = {
+    "code": "PRPF400",
+    "lang": "en",
+    "message": "Password reset request processing failed. Please try again later.",
+}
+
 VALIDATION_ERROR_DICT = {
     "UAE400": USER_ALREADY_EXISTS,
 }
